@@ -14,15 +14,6 @@ public record Position(double x, double y) {
         return new Position(x, y + 1);
     }
 
-    public Position getRandomNeighbour() {
-        int n = (int) (Math.random() * 4);
-        switch (n) {
-            case 0:
-                return getRight();
-            default:
-                return getLeft();
-        }
-    }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
