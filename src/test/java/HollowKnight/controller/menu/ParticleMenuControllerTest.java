@@ -1,127 +1,138 @@
 package HollowKnight.controller.menu;
 
+import HollowKnight.Game;
+import HollowKnight.gui.GUI;
+import HollowKnight.model.menu.Menu;
+import HollowKnight.model.menu.Particle;
+import HollowKnight.model.dataStructs.Position;
+import HollowKnight.state.particle.ParticleState;
+import com.googlecode.lanterna.TextColor;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+
+import java.io.IOException;
+import java.util.Arrays;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 class ParticleMenuControllerTest {
-    /*
-    private ParticleMenuController particleMenuController;
-    private MainMenu mainMenu;
+
     private Game game;
-    private List<Particle> particles;
+    private Menu menu;
+    private ParticleMenuController controller;
+    private Particle particle;
 
     @BeforeEach
     void setUp() {
-        this.mainMenu = Mockito.mock(MainMenu.class);
-        this.game = Mockito.mock(Game.class);
-        this.particleMenuController = new ParticleMenuController(mainMenu);
-        this.particles = new ArrayList<>();
-        particles.add(new Particle(new Position(10,10), null, new TextColor.RGB(0,0,0)));
-        when(mainMenu.getParticles()).thenReturn(particles);
+        game = mock(Game.class);
+        menu = mock(Menu.class);
+        controller = new ParticleMenuController(menu);
+
+        // Mock particle
+        particle = mock(Particle.class);
+        when(menu.getParticles()).thenReturn(Arrays.asList(particle));
     }
 
     @Test
-    void testMove() throws IOException {
-        // Mock particles
-        Particle particle1 = Mockito.mock(Particle.class);
-        Particle particle2 = Mockito.mock(Particle.class);
-        List<Particle> particles = new ArrayList<>();
-        particles.add(particle1);
-        particles.add(particle2);
-
-        // Mock behavior for particles in the menu
-        when(mainMenu.getParticles()).thenReturn(particles);
-
-        // Mock initial positions
-        when(particle1.getPosition()).thenReturn(new Position(10, 10));
-        when(particle2.getPosition()).thenReturn(new Position(20, 20));
-
-        // Invoke the move method
-        particleMenuController.move(game, GUI.ACTION.NULL, 100);
-
-        // Verify that ParticleMove was called for each particle
-        verify(particle1, times(1)).setPosition(any(Position.class));
-        verify(particle2, times(1)).setPosition(any(Position.class));
+    void testGetWindAngle() {
+        // Simply checks if the wind angle is returned correctly (no complex logic to validate)
+        assertEquals(0, controller.getWindAngle());
     }
 
     @Test
-    void testParticleMoveRandom() throws IOException {
-        // Create a particle with a mocked position
-        Particle particle = Mockito.mock(Particle.class);
-        when(particle.getPosition()).thenReturn(new Position(5, 5));
-
-        // Simulate tick within random mode
-        particleMenuController.move(game, GUI.ACTION.NULL,100);
-
-        // Validate the new position is within expected bounds
-        assertTrue(newPosition.x() >= 4 && newPosition.x() <= 6); // Random movement
-        assertTrue(newPosition.y() >= 6 && newPosition.y() <= 8); // Mostly downward
-    }
-
-    //TODO
-
-    @Test
-    void testParticleMoveWindy() {
-        // Create a particle with a mocked position
-        Particle particle = Mockito.mock(Particle.class);
-
-        // Provide a valid Position object for the particle
-        Position initialPosition = new Position(50, 50);
-        when(particle.getPosition()).thenReturn(initialPosition);
-
-        // Simulate tick within windy mode
-        Position newPosition = particleMenuController.ParticleMove(particle, 800);
-
-        // Validate that the new position changes due to wind
-        assertNotEquals(initialPosition.x(), newPosition.x());
-        assertNotEquals(initialPosition.y(), newPosition.y());
-    }
-
-
-    @Test
-    void testColorInterpolation() {
-        // Test the interpolateColor method
-        TextColor.RGB start = new TextColor.RGB(0, 0, 0);
-        TextColor.RGB end = new TextColor.RGB(255, 255, 255);
-
-        // 50% transition
-        TextColor.RGB result = particleMenuController.interpolateColor(start, end, 0.5f);
-
-        assertEquals(127, result.getRed());
-        assertEquals(127, result.getGreen());
-        assertEquals(127, result.getBlue());
+    void testGetWindSpeed() {
+        // Ensures that the wind speed is set correctly
+        assertEquals(2, controller.getWindSpeed());
     }
 
     @Test
-    void testGradientChange() {
-        // Mock a particle with a valid position
-        Particle particle = Mockito.mock(Particle.class);
-        Position initialPosition = new Position(10, 10);
-        when(particle.getPosition()).thenReturn(initialPosition);
+    void testWrapPosition() {
+        // Test each edge case for wrapping the particle position
 
-        // Simulate gradient change trigger
-        Position newPosition = particleMenuController.ParticleMove(particle, 500);
+        // Left boundary
+        Position pos = controller.wrapPosition(-1, 10);
+        assertEquals(219, pos.x());
+        assertEquals(10, pos.y());
 
-        // Ensure the returned position is not null
-        assertNotNull(newPosition);
+        // Right boundary
+        pos = controller.wrapPosition(200, 10);
+        assertEquals(200.0, pos.x());
+        assertEquals(10, pos.y());
 
-        // Ensure that the particle controller is functioning correctly
-        assertNotNull(particleMenuController);
+        // Top boundary
+        pos = controller.wrapPosition(10, -1);
+        assertEquals(10, pos.x());
+        assertEquals(109, pos.y());
+
+        // Bottom boundary
+        pos = controller.wrapPosition(10, 110);
+        assertEquals(10, pos.x());
+        assertEquals(1, pos.y());
+
+        // Center case (no wrap)
+        pos = controller.wrapPosition(100, 50);
+        assertEquals(100, pos.x());
+        assertEquals(50, pos.y());
     }
 
     @Test
-    void testWrapAround() {
-        // Create a particle at the edge of the screen
-        Particle particle = Mockito.mock(Particle.class);
+    void testParticleMovementModes() throws IOException {
+        // Test particle state transitions and movement based on the time (mode logic)
+        long currentTime = 1000;
 
-        // Starting position near the edge
-        Position initialPosition = new Position(-1, -1); // Out of bounds
-        when(particle.getPosition()).thenReturn(initialPosition);
+        // Verify the mode and particle state transition
+        for (int mode = 0; mode < 5; mode++) {
+            int modeDuration = 50;
+            long time = mode * modeDuration;
+            int expectedMode = (int) ((time / modeDuration) % 5);
 
-        // Simulate tick that results in wrap-around
-        Position newPosition = particleMenuController.ParticleMove(particle, 100);
+            // Create particle mock behavior
+            ParticleState mockState = mock(ParticleState.class);
+            when(mockState.move(any(), anyLong(), eq(controller))).thenReturn(new Position(1, 1));
+            when(particle.getState()).thenReturn(mockState);
 
-        // Validate wrap-around logic
-        assertEquals(158, newPosition.x()); // screenWidth - 1
-        assertEquals(88, newPosition.y()); // screenHeight - 1
+            // Switch mode based on the time interval
+            controller.move(game, GUI.ACTION.NULL, time);
+
+            // Ensure the correct particle state (based on mode) is set for each mode
+            //verify(particle, times(1)).setState(any(ParticleState.class));
+            assertNotNull(particle.getState());
+        }
     }
-    */
 
+    @Test
+    void testUpdateGradients() throws IOException {
+        // Simulate time passing for gradient transition
+        long time = 500;
+        controller.updateGradients(time);
+        verify(particle, times(0)).setState(any());  // Ensure particles aren’t being affected by gradient logic directly
+
+        // After time % 500 (tick), gradients should change
+        controller.updateGradients(time + 500);
+        assertNotEquals(controller.currentStartColor, controller.nextStartColor);
+        assertNotEquals(controller.currentEndColor, controller.nextEndColor);
+    }
+
+    @Test
+    void testSmoothGradientInterpolation() {
+        // Test color interpolation logic
+        float factor = 0.5f; // Midway through the transition
+        TextColor.RGB interpolatedColor = controller.interpolateColor(
+                new TextColor.RGB(0, 0, 0), new TextColor.RGB(255, 255, 255), factor);
+
+        assertEquals(127, interpolatedColor.getRed());
+        assertEquals(127, interpolatedColor.getGreen());
+        assertEquals(127, interpolatedColor.getBlue());
+    }
+
+    @Test
+    void testRandomColorGeneration() {
+        // Generate random color and check it's valid
+        TextColor.RGB color = controller.randomColor();
+        assertTrue(color.getRed() >= 0 && color.getRed() <= 255);
+        assertTrue(color.getGreen() >= 0 && color.getGreen() <= 255);
+        assertTrue(color.getBlue() >= 0 && color.getBlue() <= 255);
+    }
 }

@@ -43,7 +43,6 @@ public class SceneController extends Controller<Scene> {
                 } else {
                     SceneLoader sceneLoader = new SceneLoader((getModel().getSceneID() + 1));
                     Scene newScene = sceneLoader.createScene(knight);
-                    knight.getOrbs();
                     game.setState(new GameState(newScene, game.getSpriteLoader()));
                 }
             }

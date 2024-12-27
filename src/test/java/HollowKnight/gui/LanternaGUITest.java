@@ -51,6 +51,90 @@ public class LanternaGUITest {
     }
 
     @Test
+    public void drawRectangleTest() throws IOException, URISyntaxException, FontFormatException {
+        LanternaGUI gui = new LanternaGUI(screenGenerator, "rectangle test test");
+
+        int x = 10, y = 10, width = 5, height = 5;
+        TextColor.RGB color = new TextColor.RGB(255, 0, 0); // Red Color
+
+        // Call drawRectangle method
+        gui.drawRectangle(x, y, width, height, color);
+
+        // Verify that the setBackgroundColor and putString are called the correct number of times.
+        verify(tg, times(1)).setBackgroundColor(color);
+
+        // Verify the rectangle drawing logic
+        for (int dy = 0; dy < height; dy++) {
+            for (int dx = 0; dx < width; dx++) {
+                verify(tg, times(1)).putString(x + dx, y + dy, " ");
+            }
+        }
+    }
+
+    @Test
+    public void drawHitBoxTest() throws IOException, URISyntaxException, FontFormatException {
+        LanternaGUI gui = new LanternaGUI(screenGenerator, "hit box test");
+
+        int x = 10, y = 10, width = 5, height = 5;
+        TextColor.RGB color = new TextColor.RGB(0, 255, 0); // Green color
+
+        // Call drawHitBox method
+        gui.drawHitBox(x, y, width, height, color);
+
+        // Verify that setBackgroundColor is called
+        verify(tg, times(1)).setBackgroundColor(color);
+
+        // Verify the drawing of the box edges
+        // Top and Bottom edges
+        for (int dx = 0; dx < width; dx++) {
+            verify(tg, times(1)).putString(x + dx, y, " "); // Top
+            verify(tg, times(1)).putString(x + dx, y + height - 1, " "); // Bottom
+        }
+
+        // Left and right edges
+        for (int dy = 1; dy < height - 1; dy++) {
+            verify(tg, times(1)).putString(x, y + dy, " "); // Left
+            verify(tg, times(1)).putString(x + width - 1, y + dy, " "); // Right
+        }
+    }
+
+    @Test
+    public void getGUITest() throws IOException, URISyntaxException, FontFormatException {
+        LanternaGUI gui = new LanternaGUI(screenGenerator, "gui get test");
+
+        // Ensure getGUI() returns the instance of LanternaGUI
+        GUI result = gui.getGUI();
+        assertEquals(gui, result); // Assert that the returned object is the current instance of the GUI
+    }
+
+    @Test
+    public void getFPSTest() throws IOException, URISyntaxException, FontFormatException {
+        LanternaGUI gui = new LanternaGUI(screenGenerator, "get fps test");
+
+        int fpsValue = 60;
+
+        // Set the FPS
+        gui.setFPS(fpsValue);
+
+        // Test getFPS()
+        int resultFPS = gui.getFPS();
+        assertEquals(fpsValue, resultFPS); // Assert the FPS is correctly returned
+    }
+
+    @Test
+    public void setFPSTest() throws IOException, URISyntaxException, FontFormatException {
+        LanternaGUI gui = new LanternaGUI(screenGenerator, "setfps test");
+
+        int newFPS = 30;
+
+        // Call setFPS() method
+        gui.setFPS(newFPS);
+
+        // Verify that the FPS value has been set correctly
+        assertEquals(newFPS, gui.getFPS()); // Assert the FPS value matches the new value
+    }
+
+    @Test
     public void constructor() throws IOException, URISyntaxException, FontFormatException {
         String title = "constructor test";
         LanternaGUI gui = new LanternaGUI(screenGenerator, title);
@@ -147,6 +231,7 @@ public class LanternaGUITest {
         keyToAction.put(VK_ESCAPE, GUI.ACTION.QUIT);
         keyToAction.put(VK_ENTER, GUI.ACTION.SELECT);
         keyToAction.put(VK_SPACE, GUI.ACTION.JUMP);
+        keyToAction.put(VK_Q, GUI.ACTION.KILL);
         keyToAction.put(VK_X, GUI.ACTION.DASH);
         keyToAction.put(VK_T, GUI.ACTION.NULL);
 
@@ -170,5 +255,4 @@ public class LanternaGUITest {
             assertEquals(GUI.ACTION.NULL, action4);
         }
     }
-
 }

@@ -11,10 +11,6 @@ public class PairList<T>{
         this.firstList = firstList;
         this.secondList = secondList;
     }
-    public PairList() {
-        this.firstList = new ArrayList<>();
-        this.secondList = new ArrayList<>();
-    }
 
     public List<T> getFirstList() {
         return firstList;

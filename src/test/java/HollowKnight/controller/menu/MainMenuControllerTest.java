@@ -87,4 +87,10 @@ class MainMenuControllerTest {
         verifyNoInteractions(mainMenu);
         verifyNoInteractions(game);
     }
+
+    @Test
+    public void actionQuit() throws IOException, URISyntaxException, FontFormatException {
+        mainMenuController.move(game, GUI.ACTION.QUIT, 0);
+        Mockito.verify(game, Mockito.times(1)).setState(null);
+    }
 }

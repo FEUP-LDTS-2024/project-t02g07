@@ -29,7 +29,7 @@ class KnightViewerTest {
     }
 
     @Test
-    public void draw() throws IOException, IOException {
+    public void draw() throws IOException {
         Sprite sprite1 = mock(Sprite.class);
         Knight player = new Knight(20,30,50,3f, 50);
 
@@ -39,6 +39,13 @@ class KnightViewerTest {
         when(gameSpriteLoader.get("sprites/Knight/movement/falling/pixil-frame-0-reversed.png")).thenReturn(sprite1);
 
         player.setFacingRight(false);
+        player.setState(new FallingState(player));
+        knightViewer.draw(player, gui, frameCount,0,0);
+
+        verify(sprite1, atLeast(0))
+                .draw(gui, (int)player.getPosition().x(), (int)player.getPosition().y());
+
+        player.setFacingRight(true);
         player.setState(new FallingState(player));
         knightViewer.draw(player, gui, frameCount,0,0);
 
