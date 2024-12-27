@@ -91,11 +91,4 @@ public class GameTextViewer implements TextViewer {
         return charHeight;
     }
 
-    public static int getCharWidth() {
-        return charWidth;
-    }
-
-    public static int getSpacing() {
-        return spacing;
-    }
 }
