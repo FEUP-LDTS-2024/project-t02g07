@@ -26,21 +26,21 @@ import java.util.logging.Logger;
 
 public class GameViewer extends ScreenViewer<Scene> {
 
-    private final TextViewer textViewer;
+    final TextViewer textViewer;
 
     private static final int CAMERA_WIDTH = 230;
     private static final int CAMERA_HEIGHT = 130;
 
-    private final ParticleViewer particleViewer;
-    private final KnightViewer knightViewer;
-    private final TileViewer tileViewer;
+    final ParticleViewer particleViewer;
+    final KnightViewer knightViewer;
+    final TileViewer tileViewer;
     private final SpikeViewer spikeViewer;
     private final TreeViewer treeViewer;
     private final OrbViewer orbViewer;
     private final RockViewer rockViewer;
-    private final MonsterViewer monsterViewer;
-    private BufferedImage staticLayer;
-    private boolean staticLayerUpdated;
+    final MonsterViewer monsterViewer;
+    BufferedImage staticLayer;
+    boolean staticLayerUpdated;
 
     private static final Logger LOGGER = Logger.getLogger(GameViewer.class.getName());
 
@@ -50,7 +50,7 @@ public class GameViewer extends ScreenViewer<Scene> {
 
         this.textViewer = new GameTextViewer();
 
-        this.particleViewer = new ParticleViewer();
+        this.particleViewer = viewerProvider.getParticleViewer();
 
         this.knightViewer = viewerProvider.getPlayerViewer();
 
@@ -96,7 +96,7 @@ public class GameViewer extends ScreenViewer<Scene> {
         gui.flush();
     }
 
-    private int[] calculateCameraBounds() {
+    int[] calculateCameraBounds() {
         int playerX = (int) getModel().getPlayer().getPosition().x();
         int playerY = (int) getModel().getPlayer().getPosition().y();
 
@@ -113,7 +113,7 @@ public class GameViewer extends ScreenViewer<Scene> {
 
 
 
-    private void updateStaticLayer(int[] cameraBounds) throws IOException {
+    void updateStaticLayer(int[] cameraBounds) throws IOException {
         // Resize the static layer if needed
         if (staticLayer == null || staticLayer.getWidth() != CAMERA_WIDTH || staticLayer.getHeight() != CAMERA_HEIGHT) {
             staticLayer = new BufferedImage(1000, 1000, BufferedImage.TYPE_INT_ARGB);
@@ -143,7 +143,7 @@ public class GameViewer extends ScreenViewer<Scene> {
         staticLayerUpdated = false;
     }
 
-    private void drawStaticLayer(GUI gui) {
+    void drawStaticLayer(GUI gui) {
         // Calculate the camera offset (start of visible region)
         int offsetX = calculateCameraBounds()[0];
         int offsetY = calculateCameraBounds()[1];
@@ -174,13 +174,13 @@ public class GameViewer extends ScreenViewer<Scene> {
         }
     }
 
-    private boolean isElementInCamera(Element element, int[] cameraBounds) {
+    boolean isElementInCamera(Element element, int[] cameraBounds) {
         int x = (int) element.getPosition().x();
         int y = (int) element.getPosition().y();
         return x >= cameraBounds[0] && x < cameraBounds[2] && y >= cameraBounds[1] && y < cameraBounds[3];
     }
 
-    private <T extends Element> void drawElements(GUI gui, List<T> elements, ElementViewer<T> viewer, long time, int[] cameraBounds) throws IOException {
+    <T extends Element> void drawElements(GUI gui, List<T> elements, ElementViewer<T> viewer, long time, int[] cameraBounds) throws IOException {
         elements.stream()
                 .filter(element -> isElementInCamera(element, cameraBounds))
                 .forEach(element -> {
@@ -194,7 +194,7 @@ public class GameViewer extends ScreenViewer<Scene> {
                 });
     }
 
-    private <T extends Element> void drawElement(GUI gui, ElementViewer<T> viewer, T element, long time, int[] cameraBounds) throws IOException {
+    <T extends Element> void drawElement(GUI gui, ElementViewer<T> viewer, T element, long time, int[] cameraBounds) throws IOException {
         int adjustedX = (int) (element.getPosition().x() - cameraBounds[0]);
         int adjustedY = (int) (element.getPosition().y() - cameraBounds[1]);
         viewer.draw(element, gui, time, adjustedX, adjustedY);
@@ -209,7 +209,7 @@ public class GameViewer extends ScreenViewer<Scene> {
         }
     }
 
-    private void dynamicGradientBackground(GUI gui, long time) {
+    void dynamicGradientBackground(GUI gui, long time) {
         int width = 240; // getModel().getWidth();
         int height = 120; // getModel().getHeight();
 
