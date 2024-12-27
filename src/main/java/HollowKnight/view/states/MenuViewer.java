@@ -2,15 +2,11 @@ package HollowKnight.view.states;
 
 import HollowKnight.gui.GUI;
 import HollowKnight.gui.RescalableGUI;
-import HollowKnight.model.game.elements.Element;
 import HollowKnight.model.menu.*;
-import HollowKnight.view.Viewer;
-import HollowKnight.view.elements.ElementViewer;
 import HollowKnight.view.menu.LogoViewer;
 import HollowKnight.view.menu.OptionViewer;
 import HollowKnight.view.menu.ParticleViewer;
 import HollowKnight.view.sprites.ViewerProvider;
-import HollowKnight.view.text.GameTextViewer;
 import com.googlecode.lanterna.TextColor;
 
 import java.io.IOException;
@@ -19,8 +15,8 @@ import java.util.List;
 public class MenuViewer<T extends Menu> extends ScreenViewer<T>{
 
     private final ParticleViewer particleViewer;
-    private static final TextColor.RGB unselectedColor = new TextColor.RGB(26, 62, 108);
-    private static final TextColor.RGB selectedColor = new TextColor.RGB(219, 219, 48);
+    static final TextColor.RGB unselectedColor = new TextColor.RGB(26, 62, 108);
+    static final TextColor.RGB selectedColor = new TextColor.RGB(219, 219, 48);
     private final OptionViewer optionViewer;
     private final LogoViewer logoViewer;
 
@@ -46,13 +42,13 @@ public class MenuViewer<T extends Menu> extends ScreenViewer<T>{
         gui.flush();
     }
 
-    private void drawParticles(GUI gui, List<Particle> particles, ParticleViewer viewer, long time) throws IOException {
+    void drawParticles(GUI gui, List<Particle> particles, ParticleViewer viewer, long time) throws IOException {
         for (Particle particle : particles) {
             viewer.draw(particle, gui, time, 0, 0);
         }
     }
 
-    private void drawOptions(RescalableGUI gui, List<Option> options, OptionViewer viewer, long time) throws IOException {
+    void drawOptions(RescalableGUI gui, List<Option> options, OptionViewer viewer, long time) throws IOException {
         int animationDuration = 20; // Number of ticks for the animation
         int maxOffsetX = 40; // Maximum horizontal movement (how far right to start the animation)
 
@@ -108,7 +104,7 @@ public class MenuViewer<T extends Menu> extends ScreenViewer<T>{
         }
     }
 
-    private void drawRetroDynamicBackground(GUI gui, long time, boolean isGrayGradient) throws IOException {
+    void drawRetroDynamicBackground(GUI gui, long time, boolean isGrayGradient) throws IOException {
         int screenWidth = 184;
         int screenHeight = 112;
         double changeRate = 0.05;
