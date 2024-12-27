@@ -33,7 +33,7 @@ class ParticleControllerTest {
         Particle jumpParticle = Mockito.mock(Particle.class);
         Particle doubleJumpParticle = Mockito.mock(Particle.class);
         Particle respawnParticle = Mockito.mock(Particle.class);
-
+        Particle dashParticle = Mockito.mock(Particle.class);
         // Use real Position instances for clarity
         Position position1 = new Position(5, 5);
         Position position2 = new Position(6, 6);
@@ -45,16 +45,23 @@ class ParticleControllerTest {
         when(jumpParticle.moveParticle(scene, 0)).thenReturn(new Position(6, 7));
         when(doubleJumpParticle.moveParticle(scene, 0)).thenReturn(new Position(7, 8));
         when(respawnParticle.moveParticle(scene, 0)).thenReturn(new Position(8, 9));
+        when(dashParticle.moveParticle(scene, 0)).thenReturn(new Position(8, 9));
+
+
 
         // Mock the particle lists in Scene
         List<Particle> rainParticles = Arrays.asList(rainParticle, rainParticle);
         List<Particle> jumpParticles = Arrays.asList(jumpParticle);
         List<Particle> doubleJumpParticles = Arrays.asList(doubleJumpParticle);
         List<Particle> respawnParticles = Arrays.asList(respawnParticle);
+        List<Particle> dashParticles = Arrays.asList(dashParticle);
+
         when(scene.getParticles()).thenReturn(rainParticles);
         when(scene.getJumpParticles()).thenReturn(jumpParticles);
         when(scene.getDoubleJumpParticles()).thenReturn(doubleJumpParticles);
         when(scene.getRespawnParticles()).thenReturn(respawnParticles);
+        when(scene.getDashParticles()).thenReturn(dashParticles);
+
 
         // Invoke the move method
         particleController.move(game, GUI.ACTION.NULL, 0);
@@ -71,6 +78,9 @@ class ParticleControllerTest {
 
         verify(respawnParticle, times(1)).setScene(scene);
         verify(respawnParticle, times(1)).setPosition(new Position(8, 9));
+
+        verify(dashParticle, times(1)).setScene(scene);
+        verify(dashParticle, times(1)).setPosition(new Position(8, 9));
     }
 
 }
