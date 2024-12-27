@@ -20,10 +20,10 @@ public class ParticleMenuController extends Controller<Menu> {
     private final Random random = new Random();
 
     // Colors for the gradient
-    private TextColor.RGB currentStartColor = randomColor();
-    private TextColor.RGB currentEndColor = randomColor();
-    private TextColor.RGB nextStartColor = randomColor();
-    private TextColor.RGB nextEndColor = randomColor();
+    TextColor.RGB currentStartColor = randomColor();
+    TextColor.RGB currentEndColor = randomColor();
+    TextColor.RGB nextStartColor = randomColor();
+    TextColor.RGB nextEndColor = randomColor();
     private int transitionStartTick = -1; // Tick when the transition begins
 
     public ParticleMenuController(Menu menu) {
@@ -74,7 +74,7 @@ public class ParticleMenuController extends Controller<Menu> {
 
     }
 
-    private void updateGradients(long time) {
+    void updateGradients(long time) {
         // Trigger gradient change periodically
         // Change gradient every 500 ticks
         int gradientChangeInterval = 500;
@@ -100,7 +100,7 @@ public class ParticleMenuController extends Controller<Menu> {
     }
 
     // Interpolates between two colors based on a factor (0.0 to 1.0)
-    private TextColor.RGB interpolateColor(TextColor.RGB start, TextColor.RGB end, float factor) {
+    TextColor.RGB interpolateColor(TextColor.RGB start, TextColor.RGB end, float factor) {
         int r = (int) (start.getRed() + factor * (end.getRed() - start.getRed()));
         int g = (int) (start.getGreen() + factor * (end.getGreen() - start.getGreen()));
         int b = (int) (start.getBlue() + factor * (end.getBlue() - start.getBlue()));
@@ -108,14 +108,11 @@ public class ParticleMenuController extends Controller<Menu> {
     }
 
     // Generates a random RGB color
-    private TextColor.RGB randomColor() {
+    TextColor.RGB randomColor() {
         int r = random.nextInt(256);
         int g = random.nextInt(256);
         int b = random.nextInt(256);
         return new TextColor.RGB(r, g, b);
     }
 
-    public TextColor.RGB getGradientColor(float yPositionFactor) {
-        return interpolateColor(currentStartColor, currentEndColor, yPositionFactor);
-    }
 }
