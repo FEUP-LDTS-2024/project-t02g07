@@ -46,7 +46,7 @@ public class MonsterViewer implements ElementViewer<Enemies> {
         }
     }
 
-    private Sprite getSpriteForAnimation(List<Sprite> sprites, long tick) {
+    Sprite getSpriteForAnimation(List<Sprite> sprites, long tick) {
         int animationFPS = 6; // Animation updates at 6 FPS
         int animationFrameTime = 30 / animationFPS; // Frames per tick at game FPS = 30
         int frameIndex = (int) ((tick / animationFrameTime) % sprites.size());
