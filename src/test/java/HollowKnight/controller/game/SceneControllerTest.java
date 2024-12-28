@@ -20,7 +20,9 @@ import org.mockito.Mockito;
 import java.io.IOException;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class SceneControllerTest {
@@ -48,22 +50,22 @@ class SceneControllerTest {
     @Test
     void move() throws IOException {
         sceneController.move(game, GUI.ACTION.NULL, 0);
-        Mockito.verify(playerController, Mockito.times(1))
+        verify(playerController, Mockito.times(1))
                 .move(game, GUI.ACTION.NULL, 0);
-        Mockito.verify(game, Mockito.times(0))
+        verify(game, Mockito.times(0))
                 .setState(any());
-        Mockito.verify(particleController, Mockito.times(1))
+        verify(particleController, Mockito.times(1))
                 .move(game, GUI.ACTION.NULL, 0);
     }
 
     @Test
     void moveWithQuit() throws IOException {
         sceneController.move(game, GUI.ACTION.QUIT, 0);
-        Mockito.verify(playerController, Mockito.times(0))
+        verify(playerController, Mockito.times(0))
                 .move(game, GUI.ACTION.NULL, 0);
-        Mockito.verify(game, Mockito.times(1))
+        verify(game, Mockito.times(1))
                 .setState(any(MainMenuState.class));
-        Mockito.verify(particleController, Mockito.times(0))
+        verify(particleController, Mockito.times(0))
                 .move(game, GUI.ACTION.NULL, 0);
     }
 
@@ -77,13 +79,17 @@ class SceneControllerTest {
 
         for (GUI.ACTION action : actions) {
             controller.move(null, action, 100);
-            assert (controller.getModel().getPlayer().getPosition().x() > 0);
-            assert (controller.getModel().getPlayer().getPosition().y() > 0);
-            /*assert (controller.getModel().getPlayer().getPosition().x() < width+1);
-            assert (controller.getModel().getPlayer().getPosition().y() < height+1);*/
+            // Use Truth for assertions
+            // Verifying the model is called to check position (This depends on the implementation)
+            //verify(controller.getModel()).getPlayer();
+
+            // Verifying player's position x > 0 and y > 0, via mocked getPosition methods
+            assertTrue(controller.getModel().getPlayer().getPosition().x() > 0);
+            assertTrue(controller.getModel().getPlayer().getPosition().y() > 0);
+            //assert (controller.getModel().getPlayer().getPosition().x() < width+1);
+            //assert (controller.getModel().getPlayer().getPosition().y() < height+1);
         }
     }
-
     @Test
     void moveWithEndPositionAndEnoughOrbs() throws IOException {
         // Arrange
@@ -106,11 +112,11 @@ class SceneControllerTest {
 
         // Assert
         // Check if the correct scene transition happens (move to next scene)
-        Mockito.verify(game, Mockito.times(1)).setState(Mockito.any(GameState.class));
+        verify(game, Mockito.times(1)).setState(Mockito.any(GameState.class));
 
         // Verify the scene loading logic and ensure no Credits state is set since not on last level
         //Mockito.verify(sceneLoader, Mockito.times(1)).createScene(any(Knight.class));
-        Mockito.verify(game, Mockito.times(0)).setState(Mockito.any(CreditsState.class));
+        verify(game, Mockito.times(0)).setState(Mockito.any(CreditsState.class));
     }
 
     @Test
@@ -134,10 +140,10 @@ class SceneControllerTest {
 
         // Assert
         // Ensure the Credits state is set as we are on the last level
-        Mockito.verify(game, Mockito.times(1)).setState(Mockito.any(CreditsState.class));
+        verify(game, Mockito.times(1)).setState(Mockito.any(CreditsState.class));
 
         // Ensure no scene loading for the next level
-        Mockito.verify(game, Mockito.times(0)).setState(Mockito.any(GameState.class));
+        verify(game, Mockito.times(0)).setState(Mockito.any(GameState.class));
     }
 
 
