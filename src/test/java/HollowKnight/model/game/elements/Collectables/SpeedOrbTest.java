@@ -30,4 +30,9 @@ class SpeedOrbTest {
         speedOrb.benefit(knight);
         Assertions.assertEquals(expected, knight.getMaxVelocity());
     }
+
+    @Test
+    void testGetChar() {
+        Assertions.assertEquals(speedOrb.getChar(), 's');
+    }
 }
