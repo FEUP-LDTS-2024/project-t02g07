@@ -40,16 +40,6 @@ public class RainParticle extends Particle {
 
         if (new_y >= scene.getHeight()) {
             new_y = 0;  // Particle reaches bottom and is "destroyed" (restarts from top)
-            setLifetime(getLifetime() + 1);  // Increment the lifetime
-
-            // If the particle has lived for 900 ticks, stop regenerating
-            if (getLifetime() >= 900) {
-                if (getLastRegenerationTime() == 0 || (time - getLastRegenerationTime()) >= getRandomRegenerationDelay()) {
-                    // Particle starts regenerating again after a random range of ticks
-                    setLifetime(0); // Reset lifetime
-                    setLastRegenerationTime(time); // Reset last regeneration time
-                }
-            }
         }
         return new Position(new_x, new_y);
     }
