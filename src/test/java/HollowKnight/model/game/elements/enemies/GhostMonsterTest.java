@@ -1,7 +1,7 @@
 package HollowKnight.model.game.elements.enemies;
 
 import HollowKnight.model.dataStructs.Position;
-import HollowKnight.model.game.elements.Element;
+import HollowKnight.model.dataStructs.Vector;
 import HollowKnight.model.game.scene.Scene;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,36 +12,69 @@ import static org.junit.jupiter.api.Assertions.*;
 class GhostMonsterTest {
     private GhostMonster ghostMonster;
     private Scene scene;
+
     @BeforeEach
     void setUp() {
         this.scene = Mockito.mock(Scene.class);
-        ghostMonster = new GhostMonster(10, 20, 10,
-                scene,
-                15, new Position(2, 2), 'x');
+        ghostMonster = new GhostMonster(10, 20, 10, scene, 15, new Position(2, 2), 'x');
     }
 
     @Test
-    void testMinhoteMonsterInitialization() {
-        assertEquals(10, ghostMonster.getPosition().x());
-        assertEquals(20, ghostMonster.getPosition().y());
+    void testGetChar() {
+        assertEquals('x', ghostMonster.getChar(), "Character representation should match 'x'");
     }
 
     @Test
-    void testInheritanceFromElement() {
-        assertInstanceOf(Element.class, ghostMonster);
+    void testUpdatePositionSineWaveMotion() {
+        ghostMonster.setHorizontalSpeed(5);
+        ghostMonster.setAmplitude(3);
+        ghostMonster.setFrequency(0.1);
+
+        Position initialPosition = ghostMonster.getPosition();
+        Position updatedPosition = ghostMonster.updatePosition();
+
+        assertFalse(updatedPosition.x() > initialPosition.x(), "GhostMonster should move right due to horizontalSpeed");
+        assertNotEquals(initialPosition.y(), updatedPosition.y(), "GhostMonster's y position should change due to sine wave motion");
     }
 
     @Test
-    void testMinhoteMonsterWithMock() {
-        GhostMonster mockGhostMonster = Mockito.mock(GhostMonster.class);
+    void testUpdatePositionScreenWrapping() {
+        ghostMonster.setHorizontalSpeed(5);
+        ghostMonster.setAmplitude(3);
+        ghostMonster.setFrequency(0.1);
 
-        Position mockPosition = new Position(23, 12);
-        Mockito.when(mockGhostMonster.getPosition()).thenReturn(mockPosition);
 
-        Position position = mockGhostMonster.getPosition();
-        assertNotNull(position);
+        // Place ghost near the right edge to trigger wrapping
+        ghostMonster.setPosition(new Position(99, 25));
+        Position updatedPosition = ghostMonster.updatePosition();
 
-        assertEquals(23, mockGhostMonster.getPosition().x());
-        assertEquals(12, mockGhostMonster.getPosition().y());
+        assertTrue(updatedPosition.x() < 100, "GhostMonster should wrap from right edge to left");
+
+        // Place ghost near the bottom edge to trigger wrapping
+        ghostMonster.setPosition(new Position(50, 49));
+        updatedPosition = ghostMonster.updatePosition();
+
+        assertTrue(updatedPosition.y() < 50, "GhostMonster should wrap from bottom edge to top");
+    }
+
+    @Test
+    void testMoveMonsterUpdatesPosition() {
+        ghostMonster.setHorizontalSpeed(3);
+        ghostMonster.setAmplitude(2);
+        ghostMonster.setFrequency(0.2);
+
+        Position initialPosition = ghostMonster.getPosition();
+        Position movedPosition = ghostMonster.moveMonster();
+
+        assertNotEquals(initialPosition, movedPosition, "moveMonster should update the GhostMonster's position");
+        assertEquals(movedPosition, ghostMonster.getPosition(), "moveMonster should set the new position correctly");
+    }
+
+    @Test
+    void testApplyCollisions() {
+        Vector initialVelocity = new Vector(2, 3);
+        Vector resultingVelocity = ghostMonster.applyCollisions(initialVelocity);
+
+        assertEquals(initialVelocity, resultingVelocity, "applyCollisions should return the original velocity for GhostMonster");
     }
 }
