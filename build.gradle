@@ -1,7 +1,7 @@
 plugins {
     id 'java'
     id 'application'
-    id "net.ltgt.errorprone" version "4.1.0"
+    id 'net.ltgt.errorprone' version '3.1.0'
     id 'jacoco'
     id 'info.solidsoft.pitest' version '1.15.0'
 }
@@ -9,28 +9,31 @@ plugins {
 group = 'HollowKnight'
 version = '1.0'
 
-
 repositories {
     mavenCentral()
 }
 
-dependencies {
-    // Add the main implementation dependencies
-    implementation 'com.googlecode.lanterna:lanterna:3.1.1'
-
-    // Test dependencies
-    testImplementation platform('org.junit:junit-bom:5.10.0')  // JUnit BOM to handle JUnit versions
-    testImplementation 'org.junit.jupiter:junit-jupiter'  // JUnit 5 Jupiter API
-    testImplementation 'org.mockito:mockito-core:3.7.7'    // Mockito for mocking
-    testImplementation 'net.jqwik:jqwik:1.5.1'  // Property-based testing
-    errorprone "com.google.errorprone:error_prone_core:2.30.0" // to locate code smells
-
-}
-
 application {
-    mainClass.set('HollowKnight.Game')
+    mainClass.set('timelessodyssey.Game')
 }
 
+dependencies {
+    implementation 'com.googlecode.lanterna:lanterna:3.1.1'
+    errorprone "com.google.errorprone:error_prone_core:2.20.0"
+
+    testImplementation platform('org.junit:junit-bom:5.9.1')
+
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.1'
+    testImplementation 'org.mockito:mockito-core:3.7.7'
+    testImplementation 'net.jqwik:jqwik:1.5.1'
+
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+compileJava {
+    options.compilerArgs << "-Werror"
+}
 
 test {
     useJUnitPlatform {
@@ -42,18 +45,11 @@ test {
     finalizedBy jacocoTestReport
 }
 
-compileJava {
-    options.compilerArgs << "-Werror"
+pitest {
+    junit5PluginVersion = '1.2.0'
+    pitestVersion = '1.15.0'
 }
-
 
 jacocoTestReport {
     dependsOn test // tests are required to run before generating the report
 }
-
-pitest {
-    junit5PluginVersion = '0.12'
-    jvmArgs = ['-Xmx2g', '-Xms1g', '-XX:MaxPermSize=1g', '-XX:+UseG1GC']
-}
-
-

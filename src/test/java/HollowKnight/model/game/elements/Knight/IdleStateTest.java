@@ -35,6 +35,23 @@ class IdleStateTest {
     }
 
     @Test
+    void jump() {
+        Vector result = idleState.jump();
+
+        assertEquals(0.0, result.x());
+        assertEquals(-4.0, Math.floor(result.y()));
+    }
+
+    @Test
+    void dash() {
+        Vector result = idleState.dash();
+
+        assertEquals(6.0, result.x());
+        assertEquals(0.0, result.y());
+        assertTrue(knight.isFacingRight());
+    }
+
+    @Test
     void getNextStateWalking() {
         when(mockedScene.collidesDown(Mockito.any(), Mockito.any())).thenReturn(true);
         knight.setVelocity(new Vector(1, 0));

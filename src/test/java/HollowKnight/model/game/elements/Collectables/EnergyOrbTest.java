@@ -26,4 +26,9 @@ class EnergyOrbTest {
         energyorb.benefit(knight);
         Assertions.assertEquals(knight.getEnergy(), 55);
     }
+
+    @Test
+    void testGetChar() {
+        Assertions.assertEquals(energyorb.getChar(), 'e');
+    }
 }

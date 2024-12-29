@@ -11,11 +11,6 @@ import static java.lang.Math.max;
 public abstract class Particle extends Element {
 
     private Scene scene;
-    // Random delay time for regenerating the particle (in ticks)
-    private static final int MIN_REGEN_DELAY = 200;
-    private static final int MAX_REGEN_DELAY = 600;
-    private int lifetime; // Tracks the number of ticks this particle has been alive
-    private long lastRegenerationTime; // Tracks when the particle last stopped regenerating
 
     private TextColor.RGB color;
     private Position velocity; // Includes x and y velocities
@@ -47,23 +42,8 @@ public abstract class Particle extends Element {
         return velocity;
     }
 
-    public int getLifetime() {
-        return lifetime;
-    }
-
     public void setVelocity(Position velocity) {
         this.velocity = velocity;
-    }
-
-    public void setLastRegenerationTime(long lastRegenerationTime) {
-        this.lastRegenerationTime = lastRegenerationTime;
-    }
-
-    public void setLifetime(int lifetime) {
-        this.lifetime = lifetime;
-    }
-    public long getLastRegenerationTime() {
-        return lastRegenerationTime;
     }
 
     public TextColor.RGB getColor() {
@@ -72,11 +52,6 @@ public abstract class Particle extends Element {
 
     public void setColor(TextColor.RGB color) {
         this.color = color;
-    }
-
-    // Random regeneration delay between MIN_REGEN_DELAY and MAX_REGEN_DELAY ticks
-    public long getRandomRegenerationDelay() {
-        return (long) MIN_REGEN_DELAY + (int)(Math.random() * (MAX_REGEN_DELAY - MIN_REGEN_DELAY));
     }
 
     protected abstract Vector applyCollisions(Vector velocity);
@@ -90,6 +65,5 @@ public abstract class Particle extends Element {
     public void setScene(Scene scene) {
         this.scene = scene;
     }
-
 
 }

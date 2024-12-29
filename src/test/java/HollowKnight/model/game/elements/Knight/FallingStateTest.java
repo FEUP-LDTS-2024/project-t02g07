@@ -10,13 +10,22 @@ import static org.mockito.Mockito.*;
 
 class FallingStateTest {
     private Knight knight;
+    private Knight knight_;
+
     private Scene scene;
     private FallingState fallingState;
+    private FallingState fallingState2;
+
 
     @BeforeEach
     void setUp() {
         knight = mock(Knight.class);
+        knight_ = new Knight(0, 0, 50, 1, 1);
         scene = mock(Scene.class);
+        knight_.setScene(scene);
+        fallingState2 = new FallingState(knight_);
+
+        knight_.setState(fallingState2);
         when(knight.getScene()).thenReturn(scene);
         when(knight.getAcceleration()).thenReturn(0.75);
         when(knight.getVelocity()).thenReturn(new Vector(0, 1));
@@ -25,7 +34,25 @@ class FallingStateTest {
 
         fallingState = new FallingState(knight);
     }
+    @Test
+    void dashRight() {
+        knight_.setFacingRight(true);
+        Vector result = fallingState2.dash();
 
+        assertEquals(6.0, result.x());
+        assertEquals(0.0, result.y());
+        assertTrue(knight_.isFacingRight());
+    }
+
+    @Test
+    void dashLeft() {
+        knight_.setFacingRight(false);
+        Vector result = fallingState2.dash();
+
+        assertEquals(-6.0, result.x());
+        assertEquals(0.0, result.y());
+        assertFalse(knight_.isFacingRight());
+    }
     @Test
     void testJumpWithValidVelocityAndJumpCounter() {
         when(knight.getJumpCounter()).thenReturn(0);

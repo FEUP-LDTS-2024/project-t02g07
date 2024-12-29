@@ -10,8 +10,10 @@ import HollowKnight.model.game.elements.Knight.Knight;
 import HollowKnight.model.game.elements.Particle.DashParticle;
 import HollowKnight.model.game.elements.Particle.RainParticle;
 import HollowKnight.model.game.elements.Spike;
+import HollowKnight.model.game.elements.Tree;
 import HollowKnight.model.game.elements.enemies.Enemies;
 import HollowKnight.model.game.elements.enemies.PurpleMonster;
+import HollowKnight.model.game.elements.rocks.Rock;
 import HollowKnight.model.game.elements.tile.Tile;
 import HollowKnight.model.game.scene.Scene;
 import HollowKnight.view.elements.collectables.OrbViewer;
@@ -62,10 +64,13 @@ class GameViewerTest {
         scene.getPlayer().setScene(scene);
 
         scene.setOrbs(new Collectables[][] { { null, new SpeedOrb(8, 0,1.1,'s') }, { null, null }});
+        scene.setRocks(new Rock[][] { { null, new Rock(8, 0,'R') }, { null, null }});
+        scene.setTrees(new Tree[][] { { null, new Tree(8, 0,'T') }, { null, null }});
+
 
         scene.setTiles(new Tile[][] {
                 { null, null },
-                { new Tile(0, 8, 'T'), null } // Ensure non-null tiles
+                { new Tile(0, 8, 'L'), null } // Ensure non-null tiles
         });
 
         scene.setSpikes(new Spike[][] {
@@ -111,93 +116,29 @@ class GameViewerTest {
         // Initialize the game viewer
         gameViewer = new GameViewer(scene, viewerProvider);
     }
-
-    @Test
-    void testCalculateCameraBounds() {
-        int[] bounds = gameViewer.calculateCameraBounds();
-        assertEquals(0, bounds[0]);
-        assertEquals(0, bounds[1]);
-    }
-    /*
-    @Test
-    void testUpdateStaticLayer() throws IOException {
-        int[] cameraBounds = {0, 0, 5, 5};
-        gameViewer.updateStaticLayer(cameraBounds);
-
-        verify(viewerProvider.getTileViewer(), times(1))
-                .draw(any(), any(), eq(0L), anyInt(), anyInt());
-        verify(viewerProvider.getSpikeViewer(), times(1))
-                .draw(any(), any(), eq(0L), anyInt(), anyInt());
-    }
-
-    @Test
-    void testDrawStaticLayer() {
-        // Mock a GUI
-        gameViewer.staticLayer = new BufferedImage(10, 10, BufferedImage.TYPE_INT_ARGB);
-
-        int[] cameraBounds = gameViewer.calculateCameraBounds();
-
-        gameViewer.drawStaticLayer(gui);
-
-        verify(gui, atLeastOnce()).drawPixel(anyInt(), anyInt(), any());
-    }
-
-    @Test
-    void testDraw() throws IOException {
-        gameViewer.draw(gui, 1L);
-
-        verify(gui, times(1)).cls();
-        verify(gui, times(1)).flush();
-        verify(viewerProvider.getPlayerViewer(), times(1)).draw(any(Knight.class), any(), eq(1L), anyInt(), anyInt());
-    }
-    */
-
     @Test
     public void draw() throws IOException {
+        GameViewer gameViewer = new GameViewer(scene, viewerProvider);
         long frameCount = 100;
         int screenWidth = 16, screenHeight = 16;
-
-        // Mock GUI dimensions
         when(gui.getWidth()).thenReturn(screenWidth);
         when(gui.getHeight()).thenReturn(screenHeight);
 
-        // Call the draw method
         gameViewer.draw(gui, frameCount);
 
-        // Verify initial clearing
         verify(gui, times(1)).cls();
 
-        // Verify the draw calls for various layers and elements
-        verify(playerViewer, times(1)).draw(scene.getPlayer(), gui, frameCount, 0, 0);
-        verify(particleViewer, times(1)).draw(scene.getParticles().get(0), gui, frameCount, 0, 0);
-        verify(particleViewer, times(1)).draw(scene.getDashParticles().get(0), gui, frameCount, 0, 0);
+        verify(playerViewer, times(1)).draw(scene.getPlayer(), gui, frameCount, 4, 1);
+        verify(particleViewer, times(1)).draw(scene.getParticles().get(0), gui, frameCount, 0, 8);
+        verify(particleViewer, times(1)).draw(scene.getDashParticles().get(0), gui, frameCount, 0,8);
+        verify(tileViewer, times(1)).draw(scene.getTiles()[1][0], gui, 0, 0, 8);
+        verify(monsterViewer, times(1)).draw(scene.getMonsters().get(0), gui, frameCount, 0, 0);
+        verify(spikeViewer, times(1)).draw(scene.getSpikes()[1][1], gui, 0, 8, 8);
+        verify(orbViewer, times(1)).draw(scene.getOrbs()[0][1], gui, 0, 8, 0);
+        verify(rockViewer, times(1)).draw(scene.getRocks()[0][1], gui, 0, 8, 0);
+        verify(treeViewer, times(1)).draw(scene.getTrees()[0][1], gui, 0, 8, 0);
 
-        // Verify static layers
-        Tile expectedTile = scene.getTiles()[1][0];
-        Spike expectedSpike = scene.getSpikes()[1][1];
-
-        // Tiles and spikes should be checked for proper calls
-        if (expectedTile != null) {
-            verify(tileViewer, times(1)).draw(expectedTile, gui, frameCount, 0, 0);
-        }
-
-        if (expectedSpike != null) {
-            verify(spikeViewer, times(1)).draw(expectedSpike, gui, frameCount, 0, 0);
-        }
-
-        // Ensure GUI flush was called
         verify(gui, times(1)).flush();
-    }
-
-    @Test
-    void testIsElementInCamera() {
-        Element elementInside = new SpeedOrb(5, 5, 1.2, 's');
-        Element elementOutside = new SpeedOrb(15, 15, 1.2, 's');
-
-        int[] cameraBounds = {0, 0, 10, 10};
-
-        assertTrue(gameViewer.isElementInCamera(elementInside, cameraBounds));
-        assertFalse(gameViewer.isElementInCamera(elementOutside, cameraBounds));
     }
 
     @Test

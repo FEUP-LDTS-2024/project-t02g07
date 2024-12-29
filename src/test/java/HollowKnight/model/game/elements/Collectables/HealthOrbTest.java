@@ -25,4 +25,9 @@ class HealthOrbTest {
         healthOrb.benefit(knight);
         Assertions.assertEquals(knight.getHP(), 20);
     }
+
+    @Test
+    void testGetChar() {
+        Assertions.assertEquals(healthOrb.getChar(), 'h');
+    }
 }

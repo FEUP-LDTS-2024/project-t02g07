@@ -4,23 +4,35 @@ import HollowKnight.model.dataStructs.Position;
 import HollowKnight.model.game.elements.Collectables.Collectables;
 import HollowKnight.model.game.elements.Collectables.SpeedOrb;
 import HollowKnight.model.game.elements.Knight.Knight;
+import HollowKnight.model.game.elements.Particle.DoubleJumpParticle;
+import HollowKnight.model.game.elements.Particle.JumpParticle;
+import HollowKnight.model.game.elements.enemies.Enemies;
+import HollowKnight.model.game.elements.enemies.GhostMonster;
+import HollowKnight.model.game.elements.enemies.PurpleMonster;
+import HollowKnight.model.game.elements.enemies.SwordMonster;
 import HollowKnight.model.game.elements.tile.Tile;
+import com.googlecode.lanterna.TextColor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.security.Key;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.verify;
 
 class SceneTest {
     private Scene scene;
+    private SceneLoader sceneLoader;
     private Knight player;
     private Position playerSize;
 
     @BeforeEach
-    public void setup() {
+    public void setup() throws IOException {
         this.scene = new Scene(20, 16, 0);
+        this.sceneLoader = new SceneLoader(0);
         this.player = new Knight(0,0, 60,0,0);
         this.scene.setPlayer(player);
         this.playerSize = new Position(player.getWidth(), player.getHeight());
@@ -123,4 +135,119 @@ class SceneTest {
         }
     }
 
+    @Test
+    void testCheckCollisionBetweenPlayerAndEnemy() {
+        Knight player = new Knight(5, 5, 30, 0, 0);
+        Enemies enemy1 = new SwordMonster(4,4,10, scene, 10, new Position(8, 8), 'E'); // Overlapping
+        Enemies enemy2 = new GhostMonster(50, 50, 1, scene, 2, new Position(2, 2), 'm'); // No collision
+
+        // Player colliding with enemy1
+        assertTrue(scene.checkCollision(player, enemy1));
+
+        // Player not colliding with enemy2
+        assertFalse(scene.checkCollision(player, enemy2));
+    }
+
+    @Test
+    void testIsAtEndPosition() {
+        scene.setEndPosition(new Position(100, 0)); // Set the end position to (100, 0)
+
+        Knight player = new Knight(0, 0, 30, 0, 0);
+        scene.setPlayer(player);
+
+        // Player not at end position
+        player.setPosition(new Position(99, 0));
+        assertFalse(scene.isAtEndPosition());
+
+        // Player exactly at end position
+        player.setPosition(new Position(100, 0));
+        assertTrue(scene.isAtEndPosition());
+
+        // Player past the end position
+        player.setPosition(new Position(101, 0));
+        assertTrue(scene.isAtEndPosition());
+    }
+
+    @Test
+    void testCollectOrbsWithNoOrbsToCollect() {
+        Collectables[][] orbs = new Collectables[5][5]; // No orbs
+        scene.setOrbs(orbs);
+
+        Knight player = new Knight(0, 0, 30, 0, 0);
+        scene.setPlayer(player);
+
+        scene.collectOrbs(orbs); // Nothing should happen
+        for (Collectables[] row : orbs) {
+            for (Collectables orb : row) {
+                assertNull(orb);
+            }
+        }
+    }
+
+    @Test
+    void testCollectOrbsWithOrbsToCollect() {
+        Collectables[][] orbs = new Collectables[5][5];
+        orbs[1][1] = new SpeedOrb(0, 0, 1.1, 's');
+        scene.setOrbs(orbs);
+
+        Knight player = new Knight(0, 0, 30, 0, 0);
+        scene.setPlayer(player);
+
+        scene.collectOrbs(orbs);
+
+        // Assert the orb is collected
+        assertEquals(1, player.getOrbs());
+    }
+
+    @Test
+    void testCollideMonstersNoCollision() {
+        Knight player = new Knight(0, 0, 100, 0, 0);
+        scene.setPlayer(player);
+
+        List<Enemies> enemies = List.of(
+                new SwordMonster(14,4,10, scene, 10, new Position(8, 8), 'E'),
+                new SwordMonster(10,10,10, scene, 10, new Position(8, 8), 'E')
+        );
+
+        scene.collideMonsters(enemies);
+
+        // Assert player not hit
+        assertEquals(100, player.getHP()); // Assuming 100 is initial health
+    }
+
+    @Test
+    void testCollideMonstersWithCollision() {
+        Knight player = new Knight(0, 0, 30, 0, 0);
+        scene.setPlayer(player);
+
+        SwordMonster enemy = new SwordMonster(1,1,10, scene, 10, new Position(8, 8), 'E');
+
+        player.setPosition(new Position(15, 15)); // Overlapping with enemy
+
+        List<Enemies> enemies = List.of(enemy);
+        scene.collideMonsters(enemies);
+
+        // Assert player was hit
+        assertEquals(30, player.getHP());
+    }
+
+    @Test
+    void testSceneSize() {
+        assertEquals(sceneLoader.getHeight(), 15);
+        assertEquals(sceneLoader.getWidth(), 30);
+    }
+
+    @Test
+    void testSetParticles() {
+        JumpParticle jumpParticle = new JumpParticle(0, 0,
+                new Position(1, 2), new TextColor.RGB(25, 25,25));
+        scene.setJumpParticles(List.of(jumpParticle));
+        DoubleJumpParticle doubleJumpParticle = new DoubleJumpParticle(0, 0,
+                new Position(1, 2), new TextColor.RGB(25, 25,25));
+        scene.setDoubleJumpParticles(List.of(doubleJumpParticle));
+
+        assertEquals(scene.getJumpParticles().size(), 1);
+        assertEquals(scene.getDoubleJumpParticles().size(), 1);
+
+    }
 }
