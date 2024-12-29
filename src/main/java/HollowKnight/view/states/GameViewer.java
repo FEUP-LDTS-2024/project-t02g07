@@ -75,7 +75,6 @@ public class GameViewer extends ScreenViewer<Scene> {
         drawElements(gui, getModel().getJumpParticles(), this.particleViewer, time);
         drawElements(gui, getModel().getRespawnParticles(), this.particleViewer, time);
         drawElements(gui, getModel().getDashParticles(), this.particleViewer, time);
-        drawElements(gui, getModel().getMonsters(), this.monsterViewer, time);
 
         drawElements(gui, getModel().getSpikes(), this.spikeViewer, 0);
         drawElements(gui, getModel().getTiles(), this.tileViewer, 0);
@@ -83,8 +82,8 @@ public class GameViewer extends ScreenViewer<Scene> {
         drawElements(gui, getModel().getOrbs(), this.orbViewer, 0);
         drawElements(gui, getModel().getRocks(), this.rockViewer, 0);
 
-
         drawElement(gui, this.knightViewer, getModel().getPlayer(), time);
+        drawElements(gui, getModel().getMonsters(), this.monsterViewer, time);
 
         PlayerStatsViewer.drawPlayerStats(gui, time, getModel(), this.textViewer);
 
