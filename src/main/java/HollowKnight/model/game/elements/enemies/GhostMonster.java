@@ -10,9 +10,9 @@ import java.util.Random;
 
 public class GhostMonster extends Enemies {
 
-    private final double amplitude;      // Controls the height of the wave
-    private final double frequency;      // Controls how fast the wave oscillates
-    private final double horizontalSpeed; // Fixed horizontal speed
+    private double amplitude;      // Controls the height of the wave
+    private double frequency;      // Controls how fast the wave oscillates
+    private double horizontalSpeed; // Fixed horizontal speed
     private double elapsedTime;          // Time tracker for the wave movement
     private final int screenWidth;       // Width of the game screen
     private final int screenHeight;      // Height of the game screen
@@ -42,6 +42,12 @@ public class GhostMonster extends Enemies {
     public char getChar() {
         return symbol;
     }
+
+    public void setAmplitude(int amplitude) {this.amplitude = amplitude;}
+    public void setFrequency(double freq) {this.frequency = freq;}
+    public void setHorizontalSpeed(int hspeed) {this.horizontalSpeed = hspeed;}
+
+
 
     @Override
     public Position updatePosition() {
