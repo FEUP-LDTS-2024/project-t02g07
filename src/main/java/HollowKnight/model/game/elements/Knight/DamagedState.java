@@ -10,6 +10,8 @@ public class DamagedState extends KnightState{
         getKnight().getScene().setRespawnParticles(getKnight().createRespawnParticles(particles));
     }
 
+    int getTicks() {return this.ticks;}
+    void setTicks(int ticks) {this.ticks = ticks;}
     @Override
     public Vector jump() {
         getKnight().setJumpCounter(getKnight().getJumpCounter() + 1);
@@ -53,13 +55,10 @@ public class DamagedState extends KnightState{
             return this;
         }
         getKnight().setGotHit(false);
-        if (!getKnight().isOnGround())
-            return getNextOnAirState();
+        if (!getKnight().isOnGround()) return getNextOnAirState();
         getKnight().setJumpCounter(0);
-        if (getKnight().isOverMaxXVelocity())
-            return new DashState(getKnight());
-        if (Math.abs(getKnight().getVelocity().x()) >= WalkingState.MIN_VELOCITY)
-            return new WalkingState(getKnight());
+        if (getKnight().isOverMaxXVelocity()) return new DashState(getKnight());
+        if (Math.abs(getKnight().getVelocity().x()) >= WalkingState.MIN_VELOCITY) return new WalkingState(getKnight());
         return new IdleState(getKnight());
     }
 }
