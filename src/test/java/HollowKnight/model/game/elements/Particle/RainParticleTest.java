@@ -1,6 +1,7 @@
 package HollowKnight.model.game.elements.Particle;
 
 import HollowKnight.model.dataStructs.Position;
+import HollowKnight.model.dataStructs.Vector;
 import HollowKnight.model.game.scene.Scene;
 import com.googlecode.lanterna.TextColor;
 import net.jqwik.api.ForAll;
@@ -24,6 +25,12 @@ class RainParticleTest {
         this.time=0;
         this.rainParticle = new RainParticle(1,1, new Position(1,1)
                         ,new TextColor.RGB(0,0,0));
+    }
+
+    @Test
+    void testCollision() {
+        Vector vel = rainParticle.applyCollisions(new Vector(1, 1));
+        assertEquals(vel, new Vector(1, 1));
     }
 
     @Test

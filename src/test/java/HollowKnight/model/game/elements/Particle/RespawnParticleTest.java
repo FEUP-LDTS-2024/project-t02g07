@@ -1,6 +1,7 @@
 package HollowKnight.model.game.elements.Particle;
 
 import HollowKnight.model.dataStructs.Position;
+import HollowKnight.model.dataStructs.Vector;
 import HollowKnight.model.game.scene.Scene;
 import com.googlecode.lanterna.TextColor;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,8 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class RespawnParticleTest {
     private RespawnParticle respawnParticle;
@@ -19,8 +19,15 @@ class RespawnParticleTest {
         this.respawnParticle =
                 new RespawnParticle(1,1, new Position(0, 3.0), new TextColor.RGB(0,0,0));
         this.mockedScene = mock(Scene.class);
-
+        respawnParticle.setScene(mockedScene);
     }
+
+    @Test
+    void testCollision() {
+        Vector vel = respawnParticle.applyCollisions(new Vector(1, 1));
+        assertEquals(vel, new Vector(1, 1));
+    }
+
 
     @Test
     void moveParticleDownCollision() {
@@ -70,4 +77,14 @@ class RespawnParticleTest {
         assertEquals(newPosition.y(), respawnParticle.getPosition().y());
     }
 
+    @Test
+    void testScene() {
+        assertEquals(respawnParticle.getScene(), respawnParticle.getScene());
+    }
+
+    @Test
+    void testSetColor() {
+        respawnParticle.setColor(new TextColor.RGB(25, 25, 25));
+        assertEquals(respawnParticle.getColor(), new TextColor.RGB(25, 25, 25));
+    }
 }

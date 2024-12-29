@@ -1,6 +1,7 @@
 package HollowKnight.model.game.elements.Particle;
 
 import HollowKnight.model.dataStructs.Position;
+import HollowKnight.model.dataStructs.Vector;
 import HollowKnight.model.game.scene.Scene;
 import com.googlecode.lanterna.TextColor;
 import net.jqwik.api.ForAll;
@@ -32,6 +33,12 @@ class DashParticleTest {
         Position position = dashParticle.moveParticle(scene,time);
         Assertions.assertNotEquals(position.x(), dashParticle.getPosition().x());
         Assertions.assertNotEquals(position.y(), dashParticle.getPosition().y());
+    }
+
+    @Test
+    void testCollision() {
+        Vector vel = dashParticle.applyCollisions(new Vector(1, 1));
+        assertEquals(vel, new Vector(1, 1));
     }
 
     @Property
