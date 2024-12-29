@@ -33,7 +33,6 @@ public class Scene {
     private double gravity = 0.25;
 
     private Knight player;
-    private Particle particle;
     private List<Particle> particles;
     private List<Particle> doubleJumpParticles;
     private List<Particle> jumpParticles;
@@ -230,7 +229,7 @@ public class Scene {
     /**
      * Helper method to check if the player collides with an enemy.
      */
-    private boolean checkCollision(Knight player, Enemies enemy) {
+    boolean checkCollision(Knight player, Enemies enemy) {
         double playerX = player.getPosition().x();
         double playerY = player.getPosition().y();
         double playerWidth = player.getWidth();
@@ -260,14 +259,6 @@ public class Scene {
 
     public void setRespawnParticles(List<Particle> respawnParticles) {
         this.respawnParticles = respawnParticles;
-    }
-
-    public Particle getParticle() {
-        return particle;
-    }
-
-    public void setParticle(Particle particle) {
-        this.particle = particle;
     }
 
     public Position getStartPosition() {
