@@ -111,4 +111,11 @@ class KnightTest {
 
         assertInstanceOf(FallingState.class, knight.getState());
     }
+
+    @Test
+    void testAddOrbs() {
+        knight.addOrbs();
+        assertEquals(1, knight.getOrbs());
+    }
+
 }

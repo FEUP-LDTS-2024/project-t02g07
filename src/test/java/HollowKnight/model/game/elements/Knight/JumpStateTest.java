@@ -24,7 +24,7 @@ class JumpStateTest {
         this.knight.setScene(mockedScene);
         jumpState = new JumpState(knight);
         knight.setState(jumpState);
-        knight.setVelocity(new Vector(1, -2.0));
+        knight.setVelocity(new Vector(1, -0.25));
         when(mockedScene.getGravity()).thenReturn(0.25);
         when(knight.isOnGround()).thenReturn(false);
     }
@@ -35,13 +35,13 @@ class JumpStateTest {
         Vector result = jumpState.jump();
 
         assertEquals(0.75, result.x());
-        assertEquals(-3, Math.floor(result.y()));
+        assertEquals(-2.0, Math.floor(result.y()));
 
         when(mockedScene.collidesUp(any(), any())).thenReturn(true);
         result = jumpState.jump();
 
         assertEquals(0.75, result.x());
-        assertEquals(0, result.y());
+        assertEquals(-1.0, Math.ceil(result.y()));
     }
 
     @Test
@@ -50,7 +50,7 @@ class JumpStateTest {
         Vector result = jumpState.dash();
 
         assertEquals(6.0, result.x());
-        assertEquals(-2.0, result.y());
+        assertEquals(-0.25, result.y());
         assertTrue(knight.isFacingRight());
     }
 
@@ -60,7 +60,7 @@ class JumpStateTest {
         Vector result = jumpState.dash();
 
         assertEquals(-6.0, result.x());
-        assertEquals(-2.0, result.y());
+        assertEquals(-0.25, result.y());
         assertFalse(knight.isFacingRight());
     }
 
@@ -69,8 +69,59 @@ class JumpStateTest {
         Vector result = jumpState.updateVelocity(knight.getVelocity());
 
         assertEquals(0.75, result.x());
-        assertEquals(-1.75, result.y());
+        assertEquals(-0.125, result.y());
 
+    }
+
+    @Test
+    void jump_() {
+        knight.setVelocity(new Vector(1, -2));
+
+        when(mockedScene.collidesUp(any(), any())).thenReturn(false);
+        Vector result = jumpState.jump();
+
+        assertEquals(0.75, result.x());
+        assertEquals(-3.0, Math.floor(result.y()));
+
+        when(mockedScene.collidesUp(any(), any())).thenReturn(true);
+        result = jumpState.jump();
+
+        assertEquals(0.75, result.x());
+        assertEquals(0, Math.ceil(result.y()));
+    }
+
+    @Test
+    void dash_() {
+        knight.setVelocity(new Vector(1, -2));
+
+        knight.setFacingRight(true);
+        Vector result = jumpState.dash();
+
+        assertEquals(6.0, result.x());
+        assertEquals(-2.0, result.y());
+        assertTrue(knight.isFacingRight());
+    }
+
+    @Test
+    void dashLeft_() {
+        knight.setVelocity(new Vector(1, -2));
+
+        knight.setFacingRight(false);
+        Vector result = jumpState.dash();
+
+        assertEquals(-6.0, result.x());
+        assertEquals(-2.0, result.y());
+        assertFalse(knight.isFacingRight());
+    }
+
+    @Test
+    void updateVelocity_() {
+        knight.setVelocity(new Vector(1, -2));
+
+        Vector result = jumpState.updateVelocity(knight.getVelocity());
+
+        assertEquals(0.75, result.x());
+        assertEquals(-1.75, result.y());
     }
 
 
